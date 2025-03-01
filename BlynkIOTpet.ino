@@ -1,6 +1,6 @@
 #define BLYNK_TEMPLATE_ID           "TMPL3jWaQKSKO"
 #define BLYNK_TEMPLATE_NAME         "NodeMCU"
-#define BLYNK_AUTH_TOKEN            "-p7LZ41dN45TEUDpNcscGlry4kLkgKSY"
+#define BLYNK_AUTH_TOKEN            "sampletoken"
 
 /* Comment this out to disable prints and save space */
 #define BLYNK_PRINT Serial
@@ -11,7 +11,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-char ssid[] = "K105"; // Your WiFi SSID
+char ssid[] = "WIFINAME"; // Your WiFi SSID
 char pass[] = "verSE88&"; // Your WiFi password
 
 #define LED D0
@@ -22,14 +22,10 @@ char pass[] = "verSE88&"; // Your WiFi password
 #define ONE_WIRE_BUS D1  // Pin for DS18B20 data
 #define TEMPERATURE_PRECISION 12
 
-#define WEIGHT_PIN V1
-int simulatedWeight = 0; 
-
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 Servo servo;
-
 BlynkTimer timer;
 
 BLYNK_CONNECTED() {
@@ -66,28 +62,14 @@ void checkIRStatus() {
   static unsigned long lastDetectionTime = 0; // Store the time of the last detection
   unsigned long currentTime = millis(); // Get the current time
   
-  // Check if the IR sensor detected an obstacle
   if (digitalRead(IR_SENSOR_PIN) == LOW) {
-    // If obstacle detected, update the last detection time
     lastDetectionTime = currentTime;
-    if (simulatedWeight < 124) {
-      simulatedWeight=simulatedWeight+23; // Increment the simulated weight
-    }
-    Blynk.virtualWrite(WEIGHT_PIN, simulatedWeight); // Update the weight value in Blynk
   } else {
-    // If no obstacle detected, simulate weight decrease
-    if (simulatedWeight > 0) {
-      simulatedWeight=simulatedWeight-52; // Decrement the simulated weight
-    }
-    Blynk.virtualWrite(WEIGHT_PIN, simulatedWeight); // Update the weight value in Blynk
-    
-    // Check if no obstacle detected for 10 seconds
     if (currentTime - lastDetectionTime >= 4000) {
-      waitmsg(); // Call the function
+      waitmsg();
     }
   }
 }
-
 
 void setup() {
   Serial.begin(9600);
